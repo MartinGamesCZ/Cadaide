@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package cadaide.fs;
+
+option go_package = "./fs_pb";
+
+service FsService {
+  rpc ListDir(ListDirRequest) returns (ListDirResponse);
+}
+
+message ListDirRequest {
+  string path = 1;
+}
+
+message ListDirResponse {
+  repeated string entries = 1;
+}
