@@ -1,0 +1,15 @@
+{
+  "name": "desktop",
+  "main": "dist/index.cjs",
+  "private": true,
+  "scripts": {
+    "start": "bun build src/index.ts --outfile=dist/index.cjs --target=node --format=cjs --packages=external && electron ."
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "electron": "^41.1.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
