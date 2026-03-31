@@ -1,8 +1,7 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import { DiscordRPCModule } from "./modules/discord-rpc";
 import path from "path";
 import axios from "axios";
-import http from "http";
 
 const socketAxios = axios.create({
   baseURL: "http://localhost",
@@ -47,4 +46,13 @@ ipcMain.handle("api-request", async (event, endpoint, options) => {
   } catch (error: any) {
     return { error: error.message };
   }
+});
+
+ipcMain.handle("dialog:openDirectory", async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+
+  if (canceled) return null;
+  else return filePaths[0];
 });
