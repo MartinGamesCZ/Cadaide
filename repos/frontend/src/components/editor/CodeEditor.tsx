@@ -19,6 +19,9 @@ export function CodeEditor() {
           fontWeight: "700",
           fontFamily: "var(--font-jetBrains), 'JetBrains Mono', monospace",
           fontLigatures: true,
+          minimap: {
+            scale: 1.5,
+          },
         }}
       />
     </div>
