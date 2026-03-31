@@ -1,5 +1,6 @@
 import { API } from "@/api";
 import { FsEntry } from "@/api/fs";
+import { getIcon } from "@/editor/icons/icons";
 import { useApiFetch } from "@/hooks/useApiFetch";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
@@ -7,7 +8,10 @@ import { PiCaretRight } from "react-icons/pi";
 
 export function Explorer() {
   return (
-    <div className="w-1/4 h-screen max-h-screen flex-grow bg-ctp-base text-ctp-text text-[15px] border-r border-ctp-surface0 py-2 overflow-y-auto">
+    <div className="w-1/4 h-screen max-h-screen flex-grow bg-ctp-base text-ctp-text text-[15px] border-r border-ctp-surface0 pb-2 overflow-y-auto">
+      <div className="flex flex-row items-center gap-1.5 px-3.5 py-1 bg-ctp-mantle text-ctp-text">
+        <p>backend</p>
+      </div>
       <ExplorerList path="/home/marti/Workspace/Programming/Cadaide/repos/backend" />
     </div>
   );
@@ -52,54 +56,12 @@ function ExplorerList(props: ExplorerListProps) {
   );
 }
 
-function getFileIcon(name: string) {
-  if (name.endsWith(".ts")) return "catppuccin:typescript";
-  if (name.endsWith(".tsx")) return "catppuccin:typescript-react";
-  if (name.endsWith(".js") || name.endsWith(".cjs") || name.endsWith(".mjs"))
-    return "catppuccin:javascript";
-  if (name.endsWith(".jsx")) return "catppuccin:javascript-react";
-  if (name.endsWith(".json")) return "catppuccin:json";
-  if (name.endsWith(".css")) return "catppuccin:css";
-  if (name.endsWith(".go")) return "catppuccin:go";
-  if (name.endsWith(".md")) return "catppuccin:markdown";
-  if (name.endsWith(".html")) return "catppuccin:html";
-  if (name.endsWith(".txt")) return "catppuccin:text";
-  if (name.endsWith(".sum") || name.endsWith(".mod") || name.endsWith(".work"))
-    return "catppuccin:go-mod";
-  return "catppuccin:file";
-}
-
-function getFolderIcon(name: string) {
-  switch (name) {
-    case "src":
-      return "catppuccin:folder-src";
-    case "components":
-      return "catppuccin:folder-components";
-    case "api":
-      return "catppuccin:folder-api";
-    case "assets":
-      return "catppuccin:folder-assets";
-    case "hooks":
-      return "catppuccin:folder-hooks";
-    case "public":
-      return "catppuccin:folder-public";
-    case "utils":
-      return "catppuccin:folder-utils";
-    case "types":
-      return "catppuccin:folder-types";
-    case "node_modules":
-      return "catppuccin:folder-node";
-    default:
-      return "catppuccin:folder";
-  }
-}
-
 function ExplorerFileEntry(props: { entry: FsEntry }) {
   return (
     <div className="flex flex-row items-center gap-1.5 px-3.5 py-1 hover:bg-ctp-surface0 cursor-pointer text-ctp-subtext1 hover:text-ctp-text transition-colors">
       <div className="w-5 h-5 flex-shrink-0" />{" "}
       <Icon
-        icon={getFileIcon(props.entry.name)}
+        icon={getIcon(props.entry.name)}
         className="w-5 h-5 flex-shrink-0"
       />{" "}
       <span className="truncate">{props.entry.name}</span>
@@ -120,7 +82,7 @@ function ExplorerDirectoryEntry(props: { entry: FsEntry }) {
           className={`w-5 h-5 flex-shrink-0 text-ctp-overlay0 transition-transform ${isExpanded ? "rotate-90" : ""}`}
         />{" "}
         <Icon
-          icon={getFolderIcon(props.entry.name)}
+          icon={getIcon(props.entry.name, true)}
           className="w-5 h-5 flex-shrink-0"
         />{" "}
         <span className="truncate">{props.entry.name}</span>
