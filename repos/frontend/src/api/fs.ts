@@ -25,4 +25,14 @@ export const FsAPI = {
 
     return response.data.content as string;
   },
+  treeDir: async (path: string, depth: number) => {
+    const response = await window.api.fetch(
+      `/filesystem/treeDir?path=${path}&depth=${depth}`,
+      {
+        method: "GET",
+      },
+    );
+
+    return response.data.entries as FsEntry[];
+  },
 };

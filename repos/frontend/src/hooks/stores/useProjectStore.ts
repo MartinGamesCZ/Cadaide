@@ -14,8 +14,9 @@ export const useProjectStore = create<{
   }[];
   activeFile: string | null;
 
-  openProject: (path: string) => void;
+  openProject: (path: string) => Promise<void>;
   loadFile: (path: string, content: string) => void;
+  loadAllFiles: (path: string) => Promise<void>;
   setActiveFile: (path: string) => void;
 }>()(
   persist(
@@ -24,7 +25,11 @@ export const useProjectStore = create<{
       loadedFiles: [],
       activeFile: null,
 
-      openProject: (path: string) => set({ path }),
+      openProject: async (path: string) => {
+        set({ path, loadedFiles: [] });
+
+        await get().loadAllFiles(path);
+      },
       loadFile: (path: string, content: string) =>
         set({
           loadedFiles: [
@@ -37,6 +42,19 @@ export const useProjectStore = create<{
             },
           ],
         }),
+      loadAllFiles: async (path: string) => {
+        const tree = await API.fs.treeDir(path, 10);
+
+        await Promise.all(
+          tree.map(async (file) => {
+            if (file.type !== "file") return;
+
+            const content = await API.fs.readFile(file.path);
+
+            get().loadFile(file.path, content);
+          }),
+        );
+      },
       setActiveFile: async (path) => {
         const content = await API.fs.readFile(path);
 
@@ -47,6 +65,10 @@ export const useProjectStore = create<{
     }),
     {
       name: "project",
+      partialize: (state) => ({
+        path: state.path,
+        activeFile: state.activeFile,
+      }),
     },
   ),
 );

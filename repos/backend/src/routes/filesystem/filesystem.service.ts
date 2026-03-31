@@ -12,6 +12,13 @@ interface FsMicroservice {
   readFile(data: { path: string }): Promise<{
     content: string;
   }>;
+  treeDir(data: { path: string; depth: number }): Promise<{
+    entries: {
+      name: string;
+      path: string;
+      type: string;
+    };
+  }>;
 }
 
 @Injectable()
@@ -32,6 +39,12 @@ export class FilesystemService implements OnModuleInit {
 
   async readFile(path: string) {
     const response = await this.fsMicroservice.readFile({ path });
+
+    return response;
+  }
+
+  async treeDir(path: string, depth: number) {
+    const response = await this.fsMicroservice.treeDir({ path, depth });
 
     return response;
   }

@@ -14,4 +14,9 @@ export class FilesystemController {
   async readFile(@Query('path') path: string) {
     return await this.filesystemService.readFile(path);
   }
+
+  @Get('/treeDir')
+  async treeDir(@Query('path') path: string, @Query('depth') depth: string) {
+    return await this.filesystemService.treeDir(path, Number(depth) ?? 1);
+  }
 }

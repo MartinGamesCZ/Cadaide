@@ -5,6 +5,8 @@ import (
 	"log"
 	"net"
 	"os"
+	"path/filepath"
+	"sync"
 
 	pb "cadaide/fs/fs_pb"
 
@@ -49,6 +51,82 @@ func (s *fsServer) ReadFile(ctx context.Context, req *pb.ReadFileRequest) (*pb.R
 	}
 
 	return &pb.ReadFileResponse{Content: string(content)}, nil
+}
+
+// sem limits concurrent goroutines for TreeDir walks.
+var sem = make(chan struct{}, 32)
+
+func (s *fsServer) TreeDir(ctx context.Context, req *pb.TreeDirRequest) (*pb.TreeDirResponse, error) {
+	maxDepth := int(req.Depth)
+
+	var mu sync.Mutex
+	var entries []*pb.FileEntry
+	var wg sync.WaitGroup
+
+	var walk func(dir string, depth int)
+
+	walk = func(dir string, depth int) {
+		defer wg.Done()
+
+		dirEntries, err := os.ReadDir(dir)
+		if err != nil {
+			return
+		}
+
+		batch := make([]*pb.FileEntry, 0, len(dirEntries))
+
+		for _, e := range dirEntries {
+			name := e.Name()
+
+			// Skip hidden files/dirs
+			if name[0] == '.' {
+				continue
+			}
+
+			fullPath := filepath.Join(dir, name)
+			isDir := e.IsDir()
+
+			var fileType string
+			if isDir {
+				fileType = "directory"
+			} else {
+				fileType = "file"
+			}
+
+			batch = append(batch, &pb.FileEntry{
+				Name: name,
+				Path: fullPath,
+				Type: fileType,
+			})
+
+			// Recurse into subdirectories
+			if isDir && (maxDepth == 0 || depth+1 < maxDepth) {
+				wg.Add(1)
+
+				select {
+				case sem <- struct{}{}:
+					// Got a slot — run in a new goroutine
+					go func(d string, dep int) {
+						walk(d, dep)
+						<-sem
+					}(fullPath, depth+1)
+				default:
+					// All slots busy — run inline to avoid blocking
+					walk(fullPath, depth+1)
+				}
+			}
+		}
+
+		mu.Lock()
+		entries = append(entries, batch...)
+		mu.Unlock()
+	}
+
+	wg.Add(1)
+	walk(req.Path, 0)
+	wg.Wait()
+
+	return &pb.TreeDirResponse{Entries: entries}, nil
 }
 
 func main() {

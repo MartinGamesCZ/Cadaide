@@ -7,6 +7,7 @@ option go_package = "./fs_pb";
 service FsService {
   rpc ListDir(ListDirRequest) returns (ListDirResponse);
   rpc ReadFile(ReadFileRequest) returns (ReadFileResponse);
+  rpc TreeDir(TreeDirRequest) returns (TreeDirResponse);
 }
 
 message ListDirRequest {
@@ -29,4 +30,13 @@ message ReadFileRequest {
 
 message ReadFileResponse {
   string content = 1;
+}
+
+message TreeDirRequest {
+  string path = 1;
+  int32 depth = 2;
+}
+
+message TreeDirResponse {
+  repeated FileEntry entries = 1;
 }
