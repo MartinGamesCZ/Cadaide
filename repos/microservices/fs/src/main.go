@@ -42,6 +42,15 @@ func (s *fsServer) ListDir(ctx context.Context, req *pb.ListDirRequest) (*pb.Lis
 	return &pb.ListDirResponse{Entries: entries}, nil
 }
 
+func (s *fsServer) ReadFile(ctx context.Context, req *pb.ReadFileRequest) (*pb.ReadFileResponse, error) {
+	content, err := os.ReadFile(req.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.ReadFileResponse{Content: string(content)}, nil
+}
+
 func main() {
 	socketPath := "./fs.sock"
 

@@ -9,4 +9,9 @@ export class FilesystemController {
   async listDir(@Query('path') path: string) {
     return await this.filesystemService.listDir(path);
   }
+
+  @Get('/readFile')
+  async readFile(@Query('path') path: string) {
+    return await this.filesystemService.readFile(path);
+  }
 }

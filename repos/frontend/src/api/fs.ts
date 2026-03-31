@@ -15,4 +15,14 @@ export const FsAPI = {
 
     return response.data.entries as FsEntry[];
   },
+  readFile: async (path: string) => {
+    const response = await window.api.fetch(
+      `/filesystem/readFile?path=${path}`,
+      {
+        method: "GET",
+      },
+    );
+
+    return response.data.content as string;
+  },
 };
