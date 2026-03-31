@@ -3,6 +3,7 @@ import { FsEntry } from "@/api/fs";
 import { getIcon } from "@/editor/icons";
 import { useProjectStore } from "@/hooks/stores/useProjectStore";
 import { useApiFetch } from "@/hooks/useApiFetch";
+import { pathToName } from "@/utils/files/file";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 import { PiCaretRight } from "react-icons/pi";
@@ -15,7 +16,7 @@ export function Explorer() {
   return (
     <div className="w-1/4 h-full max-h-full flex-grow bg-ctp-base text-ctp-text text-[15px] border-r border-ctp-surface0 pb-2 overflow-y-auto">
       <div className="flex flex-row items-center gap-1.5 px-3.5 py-1 bg-ctp-mantle text-ctp-lavender font-bold pl-6">
-        <p>{path?.split("/").at(-1)}</p>
+        <p>{pathToName(path)}</p>
       </div>
       <ExplorerList path={path} />
     </div>
@@ -62,8 +63,13 @@ function ExplorerList(props: ExplorerListProps) {
 }
 
 function ExplorerFileEntry(props: { entry: FsEntry }) {
+  const setActiveFile = useProjectStore((state) => state.setActiveFile);
+
   return (
-    <div className="flex flex-row items-center gap-1.5 px-3.5 py-1 hover:bg-ctp-surface0 cursor-pointer text-ctp-subtext1 hover:text-ctp-text transition-colors">
+    <div
+      onClick={() => setActiveFile(props.entry.path)}
+      className="flex flex-row items-center gap-1.5 px-3.5 py-1 hover:bg-ctp-surface0 cursor-pointer text-ctp-subtext1 hover:text-ctp-text transition-colors"
+    >
       <div className="w-5 h-5 flex-shrink-0" />{" "}
       <Icon
         icon={getIcon(props.entry.name)}

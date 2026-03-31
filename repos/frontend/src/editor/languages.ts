@@ -1,0 +1,15 @@
+import { isMatch } from "matcher";
+
+const languagePatterns = [
+  {
+    pattern: "*.ts",
+    language: "typescript",
+  },
+];
+
+export function getLanguage(name: string) {
+  return (
+    languagePatterns.find((p) => isMatch(name, p.pattern))?.language ??
+    "plaintext"
+  );
+}
