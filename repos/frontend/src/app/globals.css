@@ -5,3 +5,37 @@
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-firacode);
 }
+
+@layer base {
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: rgba(49, 50, 68, 0.53) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: rgba(49, 50, 68, 0.53);
+    border-radius: 0;
+    border: none;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(108, 112, 134, 0.53);
+  }
+
+  *::-webkit-scrollbar-thumb:active {
+    background: rgba(108, 112, 134, 0.75);
+  }
+
+  *::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}

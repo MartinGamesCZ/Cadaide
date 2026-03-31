@@ -5,6 +5,7 @@ declare global {
     api: {
       fetch: (endpoint: string, options: any) => Promise<any>;
       openSelectDirectoryDialog: () => Promise<string | null>;
+      setActivity: (file: string) => Promise<void>;
     };
   }
 }

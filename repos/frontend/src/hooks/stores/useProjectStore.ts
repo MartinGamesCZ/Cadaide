@@ -61,6 +61,8 @@ export const useProjectStore = create<{
         get().loadFile(path, content);
 
         set({ activeFile: path });
+
+        window.api.setActivity(pathToName(path));
       },
     }),
     {

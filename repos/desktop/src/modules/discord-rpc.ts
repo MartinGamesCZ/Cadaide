@@ -12,8 +12,17 @@ export class DiscordRPCModule {
   #setActivity() {
     this.#rpc.setActivity({
       startTimestamp: this.#startTimestamp,
-      state: "Cadaide",
-      details: "In SessionManager.ts",
+      //state: "Cadaide",
+      details: "Idle",
+      instance: false,
+    });
+  }
+
+  setActivity(details: string) {
+    this.#rpc.setActivity({
+      startTimestamp: this.#startTimestamp,
+      //state: "Cadaide",
+      details,
       instance: false,
     });
   }

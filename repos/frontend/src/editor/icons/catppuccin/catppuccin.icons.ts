@@ -187,7 +187,7 @@ export const CatppuccinFolderIcons: TIconpack = [
     icon: "catppuccin:folder-plugins",
   },
   {
-    pattern: "scripts",
+    pattern: ["scripts", "script"],
     icon: "catppuccin:folder-scripts",
   },
 ];

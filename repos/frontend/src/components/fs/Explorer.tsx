@@ -14,11 +14,13 @@ export function Explorer() {
   if (!path) return <div></div>;
 
   return (
-    <div className="w-1/4 h-full max-h-full flex-grow bg-ctp-base text-ctp-text text-[15px] border-r border-ctp-surface0 pb-2 overflow-y-auto">
+    <div className="w-1/4 h-full grow bg-ctp-base text-ctp-text text-[15px] border-r border-ctp-surface0 pb-8 overflow-hidden">
       <div className="flex flex-row items-center gap-1.5 px-3.5 py-1 bg-ctp-mantle text-ctp-lavender font-bold pl-6">
         <p>{pathToName(path)}</p>
       </div>
-      <ExplorerList path={path} />
+      <div className="overflow-auto max-h-full h-full grow">
+        <ExplorerList path={path} />
+      </div>
     </div>
   );
 }

@@ -56,3 +56,7 @@ ipcMain.handle("dialog:openDirectory", async () => {
   if (canceled) return null;
   else return filePaths[0];
 });
+
+ipcMain.handle("discord-rpc:setActivity", async (event, file: string) => {
+  rpcModule?.setActivity(`Editing ${file}`);
+});
