@@ -5,6 +5,10 @@ const languagePatterns = [
     pattern: "*.ts",
     language: "typescript",
   },
+  {
+    pattern: "*.py",
+    language: "python",
+  },
 ];
 
 export function getLanguage(name: string) {
