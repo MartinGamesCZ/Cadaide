@@ -10,10 +10,14 @@ export function SidebarTabView() {
 
   return (
     <div className="w-72 h-full flex flex-col bg-ctp-mantle">
-      <div className="w-full h-10 flex items-center px-3.5">
-        <p className="text-ctp-lavender text-md">{activeTab.title}</p>
+      <div className="w-full h-9 shrink-0 flex items-center px-3.5">
+        <p className="text-ctp-lavender text-[14px] font-semibold">
+          {activeTab.title}
+        </p>
       </div>
-      <div className="w-full h-full">{activeTab.view}</div>
+      <div className="w-full flex-1 min-h-0 overflow-auto">
+        {activeTab.view}
+      </div>
     </div>
   );
 }
