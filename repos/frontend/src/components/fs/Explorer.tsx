@@ -5,6 +5,7 @@ import { useAwait } from "@/hooks/useAwait";
 import { FilesystemFileEntry } from "@/classes/FilesystemFileEntry";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
+import { useTabbarViewState } from "@/hooks/stores/useTabbarViewState";
 
 interface IExplorerFolderProps {
   folderEntry: FilesystemFolderEntry;
@@ -48,9 +49,17 @@ export function ExplorerFolder(props: IExplorerFolderProps) {
 }
 
 export function ExplorerFile(props: IExplorerFileProps) {
+  const addTab = useTabbarViewState((state) => state.addTab);
+
   return (
     <button
-      onClick={() => {}}
+      onClick={() => {
+        addTab(
+          props.fileEntry.path,
+          props.fileEntry.icon,
+          props.fileEntry.name,
+        );
+      }}
       className="w-full flex flex-row items-center gap-1.5 px-1.5 py-1 hover:bg-ctp-surface0 cursor-pointer transition-colors text-ctp-text"
     >
       <div className="w-4 h-4" />

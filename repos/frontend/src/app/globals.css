@@ -49,4 +49,25 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  .tabbar-scrollbar::-webkit-scrollbar {
+    height: 2px;
+  }
+
+  .tabbar-scrollbar::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  .tabbar-scrollbar:hover::-webkit-scrollbar-thumb {
+    background: rgba(108, 112, 134, 0.53);
+  }
+
+  .tabbar-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+
+  .tabbar-scrollbar:hover {
+    scrollbar-color: rgba(108, 112, 134, 0.53) transparent;
+  }
 }
