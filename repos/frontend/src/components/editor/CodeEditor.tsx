@@ -1,34 +1,28 @@
-import { useProjectStore } from "@/hooks/stores/useProjectStore";
-import { useCodeEditorSetup } from "@/hooks/useCodeEditorSetup";
-import { pathToName } from "@/utils/files/file";
+import { Workspace } from "@/classes/Workspace";
+import { useEditorModels } from "@/hooks/editor/useEditorModels";
+import { useEditorProps } from "@/hooks/editor/useEditorProps";
+import { useEditorSingleton } from "@/hooks/editor/useEditorSingleton";
+import { useEditorTheme } from "@/hooks/editor/useEditorTheme";
 import { Editor } from "@monaco-editor/react";
-import { Tabs } from "./Tabs";
 
-export function CodeEditor() {
-  const setupProps = useCodeEditorSetup();
+interface ICodeEditorProps {
+  workspace: Workspace;
+}
 
-  const path = useProjectStore((state) => state.path);
-  const tabs = useProjectStore((state) => state.tabs);
+export function CodeEditor(props: ICodeEditorProps) {
+  const theme = useEditorTheme();
+  const models = useEditorModels({ workspace: props.workspace });
+  const singleton = useEditorSingleton();
 
-  if (!path) return <div></div>;
+  const editorProps = useEditorProps({
+    theme: theme,
+    models: models,
+    singleton: singleton,
+  });
 
   return (
-    <div className="w-full h-full overflow-hidden">
-      <Tabs files={tabs.map((path) => ({ path, name: pathToName(path) }))} />
-      <Editor
-        {...setupProps}
-        theme="catpuccin-mocha"
-        height="100%"
-        options={{
-          fontSize: 18,
-          fontWeight: "700",
-          fontFamily: "var(--font-jetBrains), 'JetBrains Mono', monospace",
-          fontLigatures: true,
-          minimap: {
-            scale: 1.5,
-          },
-        }}
-      />
+    <div className="w-full h-full">
+      <Editor {...editorProps} />
     </div>
   );
 }

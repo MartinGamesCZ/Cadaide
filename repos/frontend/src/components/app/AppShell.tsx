@@ -1,3 +1,5 @@
+import { useWorkspaceState } from "@/hooks/stores/useWorkspaceState";
+import { CodeEditor } from "../editor/CodeEditor";
 import { SidebarTabView } from "../views/SidebarTabView";
 import { SidebarView } from "../views/SidebarView";
 import { TabbarView } from "../views/TabbarView";
@@ -5,6 +7,8 @@ import { Bottombar } from "./Bottombar";
 import { Menubar } from "./Menubar";
 
 export function AppShell() {
+  const workspace = useWorkspaceState((state) => state.workspace);
+
   return (
     <div className="w-screen h-screen min-w-screen max-w-screen min-h-screen max-h-screen flex flex-col overflow-hidden">
       <Menubar />
@@ -13,6 +17,7 @@ export function AppShell() {
         <SidebarTabView />
         <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
           <TabbarView />
+          {workspace && <CodeEditor workspace={workspace} />}
         </div>
       </div>
       <Bottombar />

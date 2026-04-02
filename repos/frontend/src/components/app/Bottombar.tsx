@@ -1,19 +1,18 @@
-import { getDisplayLanguage, getLanguageName } from "@/editor/languages";
-import { useInmemoryEditorStore } from "@/hooks/stores/useInmemoryEditorStore";
-import { useProjectStore } from "@/hooks/stores/useProjectStore";
+import { getLanguage, getLanguageName } from "@/editor/languages";
+import { useTabbarViewState } from "@/hooks/stores/useTabbarViewState";
+import { pathToName } from "@/utils/files/file";
 
 export function Bottombar() {
-  const cursorPosition = useInmemoryEditorStore((state) => state.cursor);
-  const activeFile = useProjectStore((state) => state.activeFile);
+  const activeTabPath = useTabbarViewState((state) => state.activeTabPath);
 
   return (
     <div className="w-full h-8 bg-ctp-mantle border-t border-ctp-surface0 flex flex-row items-center px-3.5">
       <div className="mr-auto"></div>
       <div className="text-sm flex flex-row gap-4">
         <p>
-          Ln {cursorPosition.line}, Col {cursorPosition.column}
+          {activeTabPath &&
+            getLanguageName(getLanguage(pathToName(activeTabPath)))}
         </p>
-        <p>{getLanguageName(getDisplayLanguage(activeFile!))}</p>
       </div>
     </div>
   );

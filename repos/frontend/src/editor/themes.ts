@@ -2,7 +2,7 @@ import { Monaco } from "@monaco-editor/react";
 import { themeCatppuccinMocha } from "./themes/catppuccin/mocha.theme";
 
 const themes = {
-  "catpuccin-mocha": themeCatppuccinMocha,
+  "catppuccin-mocha": themeCatppuccinMocha,
 };
 
 export function registerMonacoThemes(monaco: Monaco) {

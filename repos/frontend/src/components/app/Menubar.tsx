@@ -1,6 +1,5 @@
 import { PiCards, PiMinus, PiX } from "react-icons/pi";
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { useProjectStore } from "@/hooks/stores/useProjectStore";
 import { useWorkspaceState } from "@/hooks/stores/useWorkspaceState";
 import { Workspace } from "@/classes/Workspace";
 
@@ -23,16 +22,14 @@ export function Menubar() {
   const [openMenu, setOpenMenu] = useState<number | null>(null);
   const menubarRef = useRef<HTMLDivElement>(null);
 
-  const openProject = useProjectStore((state) => state.openProject);
   const setWorkspace = useWorkspaceState((state) => state.setWorkspace);
 
   const handleOpenProject = useCallback(async () => {
     const path = await window.api.openSelectDirectoryDialog();
     if (!path) return;
 
-    //openProject(path);
     setWorkspace(new Workspace(path));
-  }, [openProject, setWorkspace]);
+  }, [setWorkspace]);
 
   const MENUS: MenuDefinition[] = useMemo(
     () => [

@@ -54,7 +54,7 @@ export function TabbarViewItem(props: TabbarViewItemProps) {
     <div
       ref={ref}
       onClick={() => setActiveTab(props.path)}
-      className={`w-fit pt-1 pb-2.5 group-hover:pb-0 shrink-0 h-full flex flex-row items-center gap-2 px-4 cursor-pointer transition-colors duration-150 ${props.isActive ? "bg-ctp-mantle border-t-2 border-ctp-lavender" : "bg-ctp-mantle/50 hover:bg-ctp-surface0 border-t-2 border-transparent"}`}
+      className={`w-fit pt-1 pb-[11px] group-hover:pb-0 shrink-0 h-full flex flex-row items-center gap-2 px-4 cursor-pointer transition-colors duration-150 ${props.isActive ? "bg-ctp-mantle border-t-2 border-ctp-lavender" : "bg-ctp-mantle/50 hover:bg-ctp-surface0 border-t-2 border-transparent"}`}
     >
       <Icon icon={props.icon} className="w-5 h-5 shrink-0" />
       <p className="whitespace-nowrap">{props.name}</p>

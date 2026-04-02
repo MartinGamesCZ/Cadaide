@@ -23,7 +23,7 @@ export const FsAPI = {
       },
     );
 
-    return response.data.content as string;
+    return (response.data?.content as string) ?? "";
   },
   treeDir: async (path: string, depth: number) => {
     const response = await window.api.fetch(

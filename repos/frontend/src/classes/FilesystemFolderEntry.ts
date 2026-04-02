@@ -26,4 +26,16 @@ export class FilesystemFolderEntry extends FilesystemEntry {
       })
       .sort(sortFilesystemEntries);
   }
+
+  async tree(
+    depth: number = 10,
+  ): Promise<Array<FilesystemFolderEntry | FilesystemFileEntry>> {
+    const entries = await API.fs.treeDir(this.path, depth);
+
+    return entries.map((entry) => {
+      if (entry.type == "directory")
+        return new FilesystemFolderEntry(entry.path);
+      return new FilesystemFileEntry(entry.path);
+    });
+  }
 }
