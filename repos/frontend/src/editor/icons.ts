@@ -1,8 +1,5 @@
 import { IconifyIcon } from "@iconify/react";
-import {
-  CatppuccinFolderIcons,
-  CatppuccinIcons,
-} from "./icons/catppuccin/catppuccin.icons";
+import catppuccinIconConfig from "@/config/icons/catppuccin.json";
 import { isMatch } from "matcher";
 
 export type TIconpack = {
@@ -11,8 +8,8 @@ export type TIconpack = {
 }[];
 
 export const Iconpacks: Record<string, TIconpack> = {
-  catppuccin: CatppuccinIcons,
-  catppuccinFolders: CatppuccinFolderIcons,
+  catppuccin: catppuccinIconConfig.files,
+  catppuccinFolders: catppuccinIconConfig.folders,
 };
 
 export function getIcon(name: string, isFolder: boolean = false) {

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Icons configuration schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": ["string", "array"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": ["pattern", "icon"]
+      }
+    },
+    "folders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pattern": {
+            "type": ["string", "array"],
+            "items": {
+              "type": "string"
+            }
+          },
+          "icon": {
+            "type": "string"
+          }
+        },
+        "required": ["pattern", "icon"]
+      }
+    }
+  },
+  "required": ["$schema", "files", "folders"]
+}
