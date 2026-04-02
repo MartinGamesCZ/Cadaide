@@ -7,17 +7,17 @@
  */
 
 import type { Monaco } from "@monaco-editor/react";
-import type { editor, languages, IDisposable } from "monaco-editor";
+import type { editor, IDisposable, languages } from "monaco-editor";
+import type {
+  MessageConnection,
+  NotificationHandler,
+} from "vscode-jsonrpc/browser";
+import { createMessageConnection } from "vscode-jsonrpc/browser";
 import {
   toSocket,
   WebSocketMessageReader,
   WebSocketMessageWriter,
 } from "vscode-ws-jsonrpc";
-import { createMessageConnection } from "vscode-jsonrpc/browser";
-import type {
-  MessageConnection,
-  NotificationHandler,
-} from "vscode-jsonrpc/browser";
 
 // ── Helpers ────────────────────────────────────────────────────────────
 
@@ -280,7 +280,15 @@ export class LightLspClient {
   private handleDiagnostics(params: { uri: string; diagnostics: any[] }) {
     const { monaco } = this.opts;
     const uri = monaco.Uri.parse(params.uri);
-    const model = monaco.editor.getModel(uri);
+    let model = monaco.editor.getModel(uri);
+
+    // Fallback: match by path across all models (handles scheme mismatches)
+    if (!model) {
+      const path = uri.path;
+      model =
+        monaco.editor.getModels().find((m: any) => m.uri.path === path) ?? null;
+    }
+
     if (!model) return;
 
     const markers = params.diagnostics.map((d: any) => ({

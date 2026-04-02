@@ -4,8 +4,8 @@ import path from "path";
 import axios from "axios";
 
 const socketAxios = axios.create({
-  baseURL: "http://localhost",
-  socketPath: path.join(process.cwd(), "../backend/backend.sock"),
+  baseURL: "http://localhost:3001",
+  //socketPath: path.join(process.cwd(), "../backend/backend.sock"),
 });
 
 let rpcModule: DiscordRPCModule | null = null;

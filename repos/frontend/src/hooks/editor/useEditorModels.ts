@@ -1,11 +1,11 @@
-import { Monaco } from "@monaco-editor/react";
+import type { Monaco } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
 import { useCallback, useEffect } from "react";
-import { editor } from "monaco-editor";
-import { Workspace } from "@/classes/Workspace";
-import { FilesystemFileEntry } from "@/classes/FilesystemFileEntry";
-import { useEditorState } from "../stores/useEditorState";
 import { Editor } from "@/classes/Editor";
+import { FilesystemFileEntry } from "@/classes/FilesystemFileEntry";
+import type { Workspace } from "@/classes/Workspace";
 import { getLanguage } from "@/editor/languages";
+import { useEditorState } from "../stores/useEditorState";
 
 interface IEditorModelsProps {
   workspace: Workspace;
@@ -31,7 +31,7 @@ export function useEditorModels(
           const model = monaco.editor.createModel(
             content,
             getLanguage(entry.name),
-            `uri://${entry.path}`,
+            monaco.Uri.parse(`file://${entry.path}`),
           );
 
           Editor.instance.addModel(model);

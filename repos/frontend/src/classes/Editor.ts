@@ -1,4 +1,4 @@
-import { editor } from "monaco-editor";
+import type { editor } from "monaco-editor";
 
 export class Editor {
   static #instance: Editor;
@@ -31,8 +31,6 @@ export class Editor {
 
   addModel(model: editor.ITextModel) {
     if (this.#models.has(model.uri.toString())) return;
-
-    console.log("Adding model", model.uri.toString());
 
     this.#models.set(model.uri.toString(), model);
   }
@@ -73,7 +71,7 @@ export class Editor {
   }
 
   openFile(path: string) {
-    const model = this.getModel(`uri://${path}`);
+    const model = this.getModel(`file://${path}`);
 
     if (!model) return;
 

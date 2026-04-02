@@ -1,4 +1,4 @@
-import { editor } from "monaco-editor";
+import type { editor } from "monaco-editor";
 
 const mocha = {
   base: "#1e1e2e",
@@ -40,6 +40,17 @@ export const themeCatppuccinMocha: editor.IStandaloneThemeData = {
     "scrollbarSlider.background": mocha.surface + "88",
     "scrollbarSlider.hoverBackground": mocha.overlay + "88",
     "minimap.background": mocha.mantle,
+
+    // Diagnostic squiggly underlines & gutter icons
+    "editorError.foreground": mocha.red,
+    "editorWarning.foreground": mocha.yellow,
+    "editorInfo.foreground": mocha.blue,
+    "editorHint.foreground": mocha.teal,
+
+    // Problem markers in the overview ruler (right-side scrollbar)
+    "editorOverviewRuler.errorForeground": mocha.red,
+    "editorOverviewRuler.warningForeground": mocha.yellow,
+    "editorOverviewRuler.infoForeground": mocha.blue,
   },
   rules: [
     { token: "*", fontStyle: "bold" },
