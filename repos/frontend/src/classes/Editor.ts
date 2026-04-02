@@ -1,4 +1,5 @@
 import type { editor } from "monaco-editor";
+import { pathToName } from "@/utils/files/file";
 
 export class Editor {
   static #instance: Editor;
@@ -35,6 +36,10 @@ export class Editor {
     this.#models.set(model.uri.toString(), model);
   }
 
+  clearModels() {
+    this.#models.clear();
+  }
+
   getModel(uri: string) {
     return this.#models.get(uri);
   }
@@ -64,7 +69,9 @@ export class Editor {
 
   #notifyIfInitialized() {
     if (this.#modelsLoaded && this.#editorMounted) {
-      this.#initializedListeners.forEach((listener) => listener());
+      this.#initializedListeners.forEach((listener) => {
+        listener();
+      });
 
       this.#initializedListeners = [];
     }
@@ -76,5 +83,7 @@ export class Editor {
     if (!model) return;
 
     this.editor.setModel(model);
+
+    window.api.setActivity(pathToName(path));
   }
 }

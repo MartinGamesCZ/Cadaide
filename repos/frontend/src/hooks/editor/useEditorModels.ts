@@ -21,6 +21,11 @@ export function useEditorModels(
 ): IEditorModelsOutput {
   const onBeforeMount = useCallback(
     async (monaco: Monaco) => {
+      for (const model of monaco.editor.getModels()) {
+        model.dispose();
+      }
+      Editor.instance.clearModels();
+
       const entries = await props.workspace.filesystem.root.tree();
 
       await Promise.all(

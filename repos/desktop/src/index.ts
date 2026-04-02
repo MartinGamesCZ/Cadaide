@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog } from "electron";
 import { DiscordRPCModule } from "./modules/discord-rpc";
 import path from "path";
 import axios from "axios";
+import { ModLauncher, ModLauncherProfile } from "./modules/mod-launcher";
 
 const socketAxios = axios.create({
   baseURL: "http://localhost:3001",
@@ -9,6 +10,9 @@ const socketAxios = axios.create({
 });
 
 let rpcModule: DiscordRPCModule | null = null;
+
+let feModLauncher: ModLauncher | null = null;
+let beModLauncher: ModLauncher | null = null;
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -27,15 +31,46 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
+
   rpcModule = new DiscordRPCModule();
+
+  feModLauncher = new ModLauncher(ModLauncherProfile.Frontend);
+  beModLauncher = new ModLauncher(ModLauncherProfile.Backend);
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
+function cleanup() {
+  feModLauncher?.kill();
+  beModLauncher?.kill();
+
+  feModLauncher = null;
+  beModLauncher = null;
+}
+
 app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") app.quit();
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+app.on("will-quit", cleanup);
+
+const exitSignals: NodeJS.Signals[] = [
+  "SIGINT",
+  "SIGTERM",
+  "SIGQUIT",
+  "SIGHUP",
+];
+
+exitSignals.forEach((signal) => {
+  process.on(signal, () => {
+    cleanup();
+
+    process.exit(0);
+  });
 });
 
 ipcMain.handle("api-request", async (event, endpoint, options) => {
