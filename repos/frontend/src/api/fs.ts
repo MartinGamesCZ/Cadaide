@@ -13,7 +13,7 @@ export const FsAPI = {
       },
     );
 
-    return response.data.entries as FsEntry[];
+    return (response.data.entries ?? []) as FsEntry[];
   },
   readFile: async (path: string) => {
     const response = await window.api.fetch(

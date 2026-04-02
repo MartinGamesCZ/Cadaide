@@ -2,12 +2,15 @@ import { Icon, IconifyIcon, IconifyIconName } from "@iconify/react";
 import { ReactNode, useState } from "react";
 import { IconType } from "react-icons";
 import { PiCaretRight } from "react-icons/pi";
+import { LoadingSpinner } from "../base/LoadingSpinner";
 
 interface IExpandableProps {
   defaultExpanded?: boolean;
   title: string;
   expandedIcon?: IconType | IconifyIcon | string;
   collapsedIcon?: IconType | IconifyIcon | string;
+  isLoading?: boolean;
+  onStateChange?: (isExpanded: boolean) => void;
   children: ReactNode;
 }
 
@@ -21,23 +24,32 @@ export function Expandable(props: IExpandableProps) {
   return (
     <div className="flex flex-col">
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => {
+          setIsExpanded(!isExpanded);
+          props.onStateChange?.(!isExpanded);
+        }}
         className="w-full flex flex-row items-center gap-1.5 px-1.5 py-1 hover:bg-ctp-surface0 cursor-pointer transition-colors text-ctp-text"
       >
         <PiCaretRight
           className={`w-4 h-4 shrink-0 text-ctp-lavender transition-transform ${isExpanded ? "rotate-90" : ""}`}
         />
-        {isExpanded && props.expandedIcon && (
-          <ExpandableIcon icon={props.expandedIcon} />
-        )}
-        {!isExpanded && props.collapsedIcon && (
-          <ExpandableIcon icon={props.collapsedIcon} />
+        {props.isLoading ? (
+          <LoadingSpinner />
+        ) : (
+          <>
+            {isExpanded && props.expandedIcon && (
+              <ExpandableIcon icon={props.expandedIcon} />
+            )}
+            {!isExpanded && props.collapsedIcon && (
+              <ExpandableIcon icon={props.collapsedIcon} />
+            )}
+          </>
         )}
         <span className="text-ctp-text text-[15px] whitespace-nowrap">
           {props.title}
         </span>
       </button>
-      {isExpanded && (
+      {isExpanded && !props.isLoading && (
         <div className="border-l border-ctp-surface0 ml-[11px]">
           {props.children}
         </div>

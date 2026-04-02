@@ -20,6 +20,8 @@ type fsServer struct {
 func (s *fsServer) ListDir(ctx context.Context, req *pb.ListDirRequest) (*pb.ListDirResponse, error) {
 	dirs, err := os.ReadDir(req.Path)
 	if err != nil {
+		log.Printf("Failed to read directory: %v", err)
+
 		return nil, err
 	}
 
@@ -28,7 +30,7 @@ func (s *fsServer) ListDir(ctx context.Context, req *pb.ListDirRequest) (*pb.Lis
 	for _, dir := range dirs {
 		var fileType string
 
-		if dir.Type().IsDir() {
+		if dir.IsDir() || dir.Type() == os.ModeSymlink {
 			fileType = "directory"
 		} else {
 			fileType = "file"
