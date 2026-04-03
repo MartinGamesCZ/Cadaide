@@ -1,9 +1,18 @@
 import { spawn, type ChildProcess } from "child_process";
 import path from "path";
+import { app } from "electron";
 
 export enum ModLauncherProfile {
   Backend = "backend",
   Frontend = "frontend",
+}
+
+const isProd = app.isPackaged;
+
+function getResourcesPath(): string {
+  return app.isPackaged
+    ? app.getAppPath().replace("app.asar", "app.asar.unpacked")
+    : process.cwd();
 }
 
 const configurations: {
@@ -11,29 +20,55 @@ const configurations: {
     command: string;
     args: string[];
     cwd: string;
+    env?: NodeJS.ProcessEnv;
   };
 } = {
-  [ModLauncherProfile.Backend]: {
-    command: "bun",
-    args: ["run", "start:dev"],
-    cwd: "../backend",
-  },
-  [ModLauncherProfile.Frontend]: {
-    command: "bun",
-    args: ["run", "dev"],
-    cwd: "../frontend",
-  },
+  [ModLauncherProfile.Backend]: isProd
+    ? {
+        command: "node",
+        args: ["dist/main"],
+        cwd: path.join(getResourcesPath(), "resources/backend"),
+        env: {
+          ...process.env,
+          NODE_ENV: "production",
+          FS_BINARY_PATH: path.join(getResourcesPath(), "resources/fs/fs"),
+        },
+      }
+    : {
+        command: "bun",
+        args: ["run", "start:dev"],
+        cwd: path.join(process.cwd(), "../backend"),
+        env: {
+          ...process.env,
+          FS_BINARY_PATH: path.join(
+            process.cwd(),
+            "../microservices/fs/build/fs",
+          ),
+        },
+      },
+  [ModLauncherProfile.Frontend]: isProd
+    ? {
+        command: "node",
+        args: ["node_modules/next/dist/bin/next", "start", "-p", "3000"],
+        cwd: path.join(getResourcesPath(), "resources/frontend"),
+        env: { ...process.env, NODE_ENV: "production" },
+      }
+    : {
+        command: "bun",
+        args: ["run", "dev"],
+        cwd: path.join(process.cwd(), "../frontend"),
+      },
 };
 
 export class ModLauncher {
   #process: ChildProcess | null = null;
 
   constructor(profile: ModLauncherProfile) {
-    const { command, args, cwd } = configurations[profile];
+    const { command, args, cwd, env } = configurations[profile];
 
     this.#process = spawn(command, args, {
-      cwd: path.join(process.cwd(), cwd),
-      env: process.env,
+      cwd,
+      env: env ?? process.env,
       detached: true,
       stdio: "inherit",
     });

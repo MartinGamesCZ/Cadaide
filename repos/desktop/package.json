@@ -1,7 +1,22 @@
 {
   "name": "desktop",
   "main": "dist/index.js",
+  "build": {
+    "files": [
+      "dist/index.js",
+      "dist/preload.js",
+      "resources/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "resources/**/*"
+    ]
+  },
   "private": true,
+  "version": "0.0.1",
+  "description": "",
+  "author": "Martin Petr <me@martinpetr.dev>",
+  "homepage": "https://cadaide.martinpetr.dev",
   "scripts": {
     "start": "bun build src/index.ts src/preload.ts --outdir=dist --target=node --format=cjs --packages=external && electron ."
   },
