@@ -31,7 +31,10 @@ const configurations: {
         env: {
           ...process.env,
           NODE_ENV: "production",
-          FS_BINARY_PATH: path.join(getResourcesPath(), "resources/fs/fs"),
+          FS_BINARY_PATH: path.join(
+            getResourcesPath(),
+            "resources/binaries/microservices/fs",
+          ),
         },
       }
     : {
