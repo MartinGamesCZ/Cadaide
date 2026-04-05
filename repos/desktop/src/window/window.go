@@ -1,6 +1,9 @@
 package window
 
 import (
+	"os/exec"
+	"runtime"
+	"strings"
 	"unsafe"
 
 	webview "github.com/webview/webview_go"
@@ -42,8 +45,63 @@ type WindowConfig struct {
 	Height int
 }
 
+func pickFolder() string {
+	switch runtime.GOOS {
+	case "windows":
+		cmd := exec.Command("powershell", "-Command", `
+			Add-Type -AssemblyName System.Windows.Forms
+			$dialog = New-Object System.Windows.Forms.FolderBrowserDialog
+			$dialog.Description = 'Select installation folder'
+			$result = $dialog.ShowDialog()
+			if ($result -eq 'OK') { $dialog.SelectedPath }
+		`)
+		out, err := cmd.Output()
+		if err != nil {
+			return ""
+		}
+		return strings.TrimSpace(string(out))
+
+	case "darwin":
+		cmd := exec.Command("osascript", "-e", `
+			POSIX path of (choose folder with prompt "Select installation folder")
+		`)
+		out, err := cmd.Output()
+		if err != nil {
+			return ""
+		}
+		return strings.TrimSpace(string(out))
+
+	case "linux":
+		// zkus zenity (GTK), pak kdialog (KDE)
+		for _, tool := range [][]string{
+			{"zenity", "--file-selection", "--directory", "--title=Select installation folder"},
+			{"kdialog", "--getexistingdirectory", "."},
+		} {
+			cmd := exec.Command(tool[0], tool[1:]...)
+			out, err := cmd.Output()
+			if err != nil {
+				continue
+			}
+			return strings.TrimSpace(string(out))
+		}
+		return ""
+	}
+
+	return ""
+}
+
 func New(config WindowConfig) *Window {
 	wv := webview.New(false)
+
+	wv.Bind("__openFolderPicker", func() string {
+		return pickFolder()
+	})
+
+	wv.Init(`
+    window.api = {
+        openSelectDirectoryDialog: () => window.__openFolderPicker()
+    }
+`)
 
 	return &Window{
 		config:  config,

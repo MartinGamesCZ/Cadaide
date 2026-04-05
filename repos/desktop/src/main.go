@@ -1,27 +1,47 @@
 package main
 
 import (
+	"cadaide/src/cmdw"
 	"cadaide/src/window"
-	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 )
 
 func main() {
+	f, _ := os.OpenFile("cadaide.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	defer f.Close()
+	log.SetOutput(f)
+
 	appdir := os.Getenv("APPDIR")
 
-	fmt.Println(appdir)
+	log.Println(appdir)
 
-	go runCommand(appdir, []string{"bun", "server.js"}, "pkg/frontend", map[string]string{
+	var bunBinary string
+	if os.Getenv("OS") == "Windows_NT" {
+		bunBinary = "bun.exe"
+	} else {
+		bunBinary = "bun"
+	}
+
+	var fsBinary string
+	if os.Getenv("OS") == "Windows_NT" {
+		fsBinary = "fs.exe"
+	} else {
+		fsBinary = "fs"
+	}
+
+	go runCommand(appdir, []string{bunBinary, "server.js"}, "pkg/frontend", map[string]string{
 		"PORT":     "3000",
 		"HOSTNAME": "127.0.0.1",
-	})
+	}, true)
 
-	go runCommand(appdir, []string{"bun", "main.js"}, "pkg/backend", map[string]string{
-		"NODE_ENV":       "production",
-		"FS_BINARY_PATH": filepath.Join(appdir, "pkg/microservices/fs/fs"),
-	})
+	go runCommand(appdir, []string{bunBinary, "main.js"}, "pkg/backend", map[string]string{
+		"NODE_ENV":        "production",
+		"FS_BINARY_PATH":  filepath.Join(appdir, "pkg/microservices/fs/"+fsBinary),
+		"BUN_BINARY_PATH": filepath.Join(appdir, "bin/"+bunBinary),
+	}, true)
 
 	w := window.New(window.WindowConfig{
 		Title:  "Cadaide",
@@ -34,12 +54,19 @@ func main() {
 	w.Open("http://localhost:3000")
 }
 
-func runCommand(appdir string, command []string, dir string, env map[string]string) error {
+func runCommand(appdir string, command []string, dir string, env map[string]string, hideWindow bool) error {
 	cmd := exec.Command(command[0], command[1:]...)
 
 	cmd.Dir = filepath.Join(appdir, dir)
 
-	cmd.Env = append(os.Environ(), "PATH="+appdir+":"+os.Getenv("PATH"))
+	var envSeparator string
+	if os.Getenv("OS") == "Windows_NT" {
+		envSeparator = ";"
+	} else {
+		envSeparator = ":"
+	}
+
+	cmd.Env = append(os.Environ(), "PATH="+appdir+envSeparator+os.Getenv("PATH"))
 	for k, v := range env {
 		cmd.Env = append(cmd.Env, k+"="+v)
 	}
@@ -47,5 +74,14 @@ func runCommand(appdir string, command []string, dir string, env map[string]stri
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	return cmd.Run()
+	if hideWindow {
+		cmdw.SetSysProcAttr(cmd)
+	}
+
+	err := cmd.Run()
+	if err != nil {
+		log.Println(err)
+	}
+
+	return nil
 }
