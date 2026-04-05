@@ -1,11 +1,15 @@
+//go:build windows
+
 package main
 
 import (
 	"archive/zip"
 	"bytes"
+	"cadaide/launcher/src/cmdw"
 	"cadaide/launcher/src/window"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -26,6 +30,10 @@ var (
 )
 
 func main() {
+	f, _ := os.OpenFile("cadaide.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	defer f.Close()
+	log.SetOutput(f)
+
 	if len(pkg) == 0 {
 		panic("pkg is empty - embed failed")
 	}
@@ -36,8 +44,6 @@ func main() {
 		Height: 200,
 	})
 
-	defer w.Destroy()
-
 	w.SetHTML(string(index))
 
 	_, err := extractPkg(appdirPath)
@@ -45,21 +51,34 @@ func main() {
 		panic(err)
 	}
 
+	var bunBinary string
+	if os.Getenv("OS") == "Windows_NT" {
+		bunBinary = "bun.exe"
+	} else {
+		bunBinary = "bun"
+	}
+
 	go func() {
-		err := runCommand([]string{"bun", "install", "--frozen-lockfile"}, "/backend", nil)
+		err := runCommand([]string{filepath.Join(binPath, bunBinary), "install", "--frozen-lockfile"}, "/backend", nil, true)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "command failed:", err)
+			log.Println("command failed:", err)
 		}
-		w.Close()
-		w.Destroy()
+		w.Close() // signals Run() to return
 	}()
 
-	w.Run() // blocks until app is ready
+	w.Run() // blocks until Close() is called
+	w.Destroy()
 
-	// launch desktop app
-	runCommand([]string{"./cadaide"}, "/desktop", map[string]string{
+	var binary string
+	if os.Getenv("OS") == "Windows_NT" {
+		binary = "cadaide.exe"
+	} else {
+		binary = "cadaide"
+	}
+
+	runCommand([]string{"./" + binary}, "/desktop", map[string]string{
 		"APPDIR": appdirPath,
-	})
+	}, false)
 }
 
 func extractPkg(dir string) (string, error) {
@@ -113,18 +132,29 @@ func extractPkg(dir string) (string, error) {
 	return dir, nil
 }
 
-func runCommand(command []string, dir string, env map[string]string) error {
+func runCommand(command []string, dir string, env map[string]string, hideWindow bool) error {
 	cmd := exec.Command(command[0], command[1:]...)
 
 	cmd.Dir = filepath.Join(pkgPath, dir)
 
-	cmd.Env = append(os.Environ(), "PATH="+binPath+":"+os.Getenv("PATH"))
+	var envSeparator string
+	if os.Getenv("OS") == "Windows_NT" {
+		envSeparator = ";"
+	} else {
+		envSeparator = ":"
+	}
+
+	cmd.Env = append(os.Environ(), "PATH="+binPath+envSeparator+os.Getenv("PATH"))
 	for k, v := range env {
 		cmd.Env = append(cmd.Env, k+"="+v)
 	}
 
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+
+	if hideWindow {
+		cmdw.SetSysProcAttr(cmd)
+	}
 
 	return cmd.Run()
 }
