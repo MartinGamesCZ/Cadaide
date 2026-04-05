@@ -8,7 +8,9 @@ export abstract class FilesystemEntry {
   }
 
   get name(): string {
-    return path.basename(this.#path);
+    const normalizedPath = this.#path.replace(/\\/g, "/");
+
+    return normalizedPath.split("/").pop()!;
   }
 
   get path(): string {

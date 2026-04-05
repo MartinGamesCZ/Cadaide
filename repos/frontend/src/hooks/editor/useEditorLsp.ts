@@ -1,8 +1,9 @@
-import { LspClient } from "@/classes/LspClient";
-import { Workspace } from "@/classes/Workspace";
-import { Monaco } from "@monaco-editor/react";
-import { editor } from "monaco-editor";
+import type { Monaco } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
+import * as monaco from "monaco-editor";
 import { useCallback, useRef } from "react";
+import { LspClient } from "@/classes/LspClient";
+import type { Workspace } from "@/classes/Workspace";
 
 export interface IEditorLspOutput {
   onMount: (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => void;
@@ -25,13 +26,13 @@ export function useEditorLsp(workspace: Workspace): IEditorLspOutput {
         client.sendDidChange(uri, model.getValue());
       });
 
-      const projectPath = workspace.path;
+      const projectPath = workspace.path.replaceAll("\\", "/");
 
       const client = new LspClient({
         wsUrl: `ws://localhost:3001/lsp?language=${"python"}`,
         monaco,
         languageIds: ["python"],
-        rootUri: `file://${projectPath}`,
+        rootUri: monaco.Uri.file(projectPath).toString(),
       });
 
       clientRef.current = client;

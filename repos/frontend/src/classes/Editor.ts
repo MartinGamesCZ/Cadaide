@@ -1,4 +1,5 @@
 import type { editor } from "monaco-editor";
+import * as monaco from "monaco-editor";
 import { pathToName } from "@/utils/files/file";
 
 export class Editor {
@@ -78,12 +79,14 @@ export class Editor {
   }
 
   openFile(path: string) {
-    const model = this.getModel(`file://${path}`);
+    const normalizedPath = path.replaceAll("\\", "/");
+    const fileUri = monaco.Uri.file(normalizedPath);
+    const model = this.getModel(fileUri.toString());
 
     if (!model) return;
 
     this.editor.setModel(model);
 
-    window.api.setActivity(pathToName(path));
+    //window.api.setActivity(pathToName(path));
   }
 }

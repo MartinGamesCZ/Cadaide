@@ -1,5 +1,6 @@
 import path from "path";
 import { Filesystem } from "./Filesystem";
+import { basename } from "@/utils/files/path";
 
 export class Workspace {
   #path: string;
@@ -13,7 +14,7 @@ export class Workspace {
   }
 
   get name(): string {
-    return path.basename(this.#path);
+    return basename(this.#path);
   }
 
   get path(): string {

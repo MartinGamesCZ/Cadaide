@@ -1,5 +1,5 @@
-import path from "path";
+import { basename } from "./path";
 
 export function pathToName(p: string) {
-  return path.basename(p);
+  return basename(p);
 }

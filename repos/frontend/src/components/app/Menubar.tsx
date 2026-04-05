@@ -31,6 +31,13 @@ export function Menubar() {
     setWorkspace(new Workspace(path));
   }, [setWorkspace]);
 
+  const handleOpenProjectPI = useCallback(async () => {
+    const path = prompt("Enter path to project:");
+    if (!path) return;
+
+    setWorkspace(new Workspace(path));
+  }, [setWorkspace]);
+
   const MENUS: MenuDefinition[] = useMemo(
     () => [
       {
@@ -40,6 +47,11 @@ export function Menubar() {
             type: "item",
             label: "Open folder...",
             onClick: handleOpenProject,
+          },
+          {
+            type: "item",
+            label: "Open folder... (path input)",
+            onClick: handleOpenProjectPI,
           },
         ],
       },
@@ -72,7 +84,7 @@ export function Menubar() {
   return (
     <div
       ref={menubarRef}
-      className="w-full h-10 bg-ctp-crust text-ctp-text text-sm border-b border-ctp-surface0 flex flex-row items-center gap-1.5 px-3.5"
+      className="w-full h-10 bg-ctp-crust text-ctp-text text-sm border-b border-ctp-surface0 flex flex-row items-center gap-1.5 px-3.5 drag-handle"
     >
       <p className="mr-4 font-semibold select-none">Cadaide</p>
       <div className="flex flex-row gap-0.5 mr-auto">

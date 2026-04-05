@@ -33,10 +33,17 @@ export function useEditorModels(
           if (!(entry instanceof FilesystemFileEntry)) return;
 
           const content = await entry.read();
+          const normalizedPath = entry.path.replaceAll("\\", "/");
+          const fileUri = monaco.Uri.file(normalizedPath);
+
           const model = monaco.editor.createModel(
             content,
             getLanguage(entry.name),
-            monaco.Uri.parse(`file://${entry.path}`),
+            fileUri,
+          );
+
+          console.log(
+            `Creating model (${content}, ${getLanguage(entry.name)}, ${fileUri})`,
           );
 
           Editor.instance.addModel(model);

@@ -38,6 +38,10 @@
   *::-webkit-scrollbar-corner {
     background: transparent;
   }
+
+  .drag-handle {
+    -webkit-app-region: drag;
+  }
 }
 
 @layer utilities {
